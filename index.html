@@ -397,8 +397,11 @@ async function loadFromCloud() {
       headers: {'X-Master-Key': API_KEY, 'X-Bin-Meta': 'false'}
     });
     if (r.ok) {
-      const d = await r.json();
-      if (d && d.custom !== undefined) {
+      const txt = await r.text();
+      let d = null;
+      try { d = JSON.parse(txt); } catch(e) {}
+      // Kun opdater fra cloud hvis der faktisk er egne kort eller videoer
+      if (d && (d.custom?.length > 0 || Object.keys(d.videos||{}).length > 0 || (d.favs||[]).length > 0)) {
         custom = d.custom || [];
         videoLinks = d.videos || {};
         favoritter = new Set(d.favs || []);
