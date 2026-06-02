@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="da" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Huskdet!</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+[data-theme="light"]{--bg:#F5F3EE;--surface:#fff;--surface2:#EDEAE4;--border:#DDD9D0;--text:#1A1816;--muted:#8A8480;--faint:#C8C4BF}
+[data-theme="dark"]{--bg:#141210;--surface:#1E1C1A;--surface2:#252321;--border:#333;--text:#F0EDE8;--muted:#8A8480;--faint:#555}
+:root{--accent:#C4722A;--r:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+.header{background:var(--text);padding:.9rem 1.25rem;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50;flex-wrap:wrap}
+.logo{font-family:'DM Serif Display',serif;font-size:19px;color:#F5F3EE;flex:1}
+.logo span{color:var(--accent);font-style:italic}
+.sw{position:relative;flex:1;min-width:150px;max-width:280px}
+.search{width:100%;padding:7px 12px 7px 30px;font-size:13px;border:none;border-radius:99px;background:rgba(255,255,255,.12);color:#F5F3EE;font-family:'DM Sans',sans-serif}
+.search::placeholder{color:rgba(255,255,255,.35)}
+.search:focus{outline:none;background:rgba(255,255,255,.18)}
+.si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.4);font-size:12px}
+.hb{padding:6px 12px;border-radius:99px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;white-space:nowrap}
+.hb-g{background:rgba(255,255,255,.1);color:#F5F3EE}
+.hb-a{background:var(--accent);color:#fff}
+.nav-tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nt{padding:10px 16px;font-size:13px;border:none;background:none;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.nt.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:500}
+.fag-bar{display:flex;gap:6px;padding:.75rem 1.25rem;overflow-x:auto;background:var(--bg);border-bottom:1px solid var(--border)}
+.fag-bar::-webkit-scrollbar{display:none}
+.ft{padding:5px 12px;font-size:13px;border-radius:99px;border:1.5px solid var(--border);background:none;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;color:var(--muted)}
+.ft.active{font-weight:500;border-color:transparent}
+.kl-bar{display:flex;gap:5px;padding:.6rem 1.25rem;overflow-x:auto;background:var(--bg);border-bottom:1px solid var(--border)}
+.kl-bar::-webkit-scrollbar{display:none}
+.kt{padding:4px 10px;font-size:12px;border-radius:99px;border:1px solid var(--border);background:none;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;color:var(--muted)}
+.kt.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+.content{padding:1rem 1.25rem;max-width:900px;margin:0 auto}
+.page{display:none}.page.active{display:block}
+.sh{font-family:'DM Serif Display',serif;font-size:17px;margin:1rem 0 .6rem;display:flex;align-items:center;gap:7px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:8px;margin-bottom:.5rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.05);transition:all .15s}
+.card:hover{box-shadow:0 3px 12px rgba(0,0,0,.1);transform:translateY(-1px)}
+.card.fav{border-left:3px solid var(--accent)}
+.ctop{display:flex;align-items:flex-start;gap:9px}
+.ci{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ch{flex:1;min-width:0}
+.ctit{font-size:14px;font-weight:500;line-height:1.3}
+.cmet{font-size:11px;color:var(--muted);margin-top:3px}
+.carr{font-size:11px;color:var(--faint);transition:transform .2s;flex-shrink:0;margin-top:2px}
+.card.open .carr{transform:rotate(180deg)}
+.cbody{display:none;margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--border)}
+.card.open .cbody{display:block}
+.ctekst{font-size:13px;line-height:1.7}
+.cformel{background:var(--surface2);border-radius:10px;padding:.65rem .9rem;font-family:monospace;font-size:13px;margin:.5rem 0;line-height:1.6;border-left:3px solid var(--accent)}
+.ctip{font-size:12px;color:var(--muted);font-style:italic;margin-top:.5rem}
+.cbadge{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:99px;margin-top:.4rem}
+.cact{font-size:11px;padding:3px 8px;border:1px solid var(--border);border-radius:6px;background:none;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif}
+.cact:hover{border-color:var(--accent);color:var(--accent)}
+.cact.on{border-color:var(--accent);color:var(--accent)}
+.vw{margin-top:.75rem;border-radius:10px;overflow:hidden;aspect-ratio:16/9}
+.vw iframe{width:100%;height:100%;display:block;border:none}
+.no-res{text-align:center;padding:2.5rem;color:var(--muted);font-size:14px}
+/* QUIZ */
+.qwrap{max-width:580px;margin:0 auto;padding:1.25rem}
+.qcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.75rem;text-align:center}
+.qopt{padding:11px 16px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface2);cursor:pointer;font-size:14px;text-align:left;font-family:'DM Sans',sans-serif;color:var(--text);display:block;width:100%;margin-bottom:8px}
+.qopt:hover{border-color:var(--accent)}
+.qopt.ok{border-color:#059669;background:#E6F9F1;color:#065F46}
+.qopt.fej{border-color:#DC2626;background:#FEF2F2;color:#991B1B}
+.qopt.vis{border-color:#059669;background:#E6F9F1;color:#065F46}
+[data-theme="dark"] .qopt.ok{background:#021A0E;color:#6EE7B7}
+[data-theme="dark"] .qopt.fej{background:#2A0A0A;color:#FCA5A5}
+[data-theme="dark"] .qopt.vis{background:#021A0E;color:#6EE7B7}
+.btn{padding:9px 18px;border-radius:10px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{opacity:.9}
+.btn-g{background:var(--surface2);color:var(--text);border:1px solid var(--border)}.btn-g:hover{border-color:var(--accent)}
+/* MODAL */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s;padding:1.5rem}
+.mbg.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border-radius:var(--r);padding:1.5rem;width:100%;max-width:400px;max-height:90vh;overflow-y:auto}
+.mh{font-family:'DM Serif Display',serif;font-size:19px;margin-bottom:1rem}
+.fl{margin-bottom:10px}
+.fl label{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+.fl input,.fl select,.fl textarea{width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif}
+.fl input:focus,.fl select:focus,.fl textarea:focus{outline:none;border-color:var(--accent)}
+.fl textarea{height:75px;resize:vertical}
+.mact{display:flex;gap:7px;justify-content:flex-end;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+.bc{padding:7px 14px;border:1px solid var(--border);border-radius:8px;background:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--muted)}
+.bs{padding:7px 16px;border:none;border-radius:8px;background:var(--text);color:var(--bg);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500}
+.bs:hover{background:var(--accent)}
+.bd{padding:7px 11px;border:1px solid var(--border);border-radius:8px;background:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;color:#7A2D2D;margin-right:auto}
+/* BRØK */
+.brok{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;font-size:.9em;margin:0 2px}
+.bt{border-bottom:1.5px solid currentColor;padding:0 3px 1px;font-size:.85em}
+.bn{padding:1px 3px 0;font-size:.85em}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">Husk<span>det!</span></div>
+  <div class="sw"><span class="si">🔍</span><input class="search" type="text" placeholder="Søg..." id="search" oninput="render()"></div>
+  <button class="hb hb-g" onclick="skiftTema()" id="tema-btn">🌙</button>
+  <button class="hb hb-g" onclick="promptElevNavn()" id="elev-navn-vis">👤 Log ind</button>
+  <button class="hb hb-a" onclick="openModal()">+ Tilføj</button>
+</div>
+
+<div class="nav-tabs">
+  <button class="nt active" onclick="setNav('regler')">📚 Regler</button>
+  <button class="nt" onclick="setNav('favoritter')">⭐ Favoritter</button>
+  <button class="nt" onclick="setNav('quiz')">🧠 Quiz</button>
+</div>
+
+<div id="filter-bar">
+  <div class="fag-bar" id="fag-bar"></div>
+  <div class="kl-bar" id="kl-bar"></div>
+</div>
+
+<div class="content">
+  <div class="page active" id="p-regler"><div id="o-regler"></div></div>
+  <div class="page" id="p-favoritter"><div id="o-fav"></div></div>
+  <div class="page" id="p-quiz"><div class="qwrap" id="o-quiz"></div></div>
+</div>
+
+<div class="mbg" id="mbg" onclick="lukvBg(event)">
+  <div class="modal">
+    <div class="mh" id="m-titel">Tilføj regel</div>
+    <div class="fl"><label>Fag</label><select id="f-fag">
+      <option value="mat">Matematik</option><option value="his">Historie</option>
+      <option value="kri">Kristendom</option><option value="nat">Natur/teknologi</option><option value="idr">Idræt</option>
+    </select></div>
+    <div class="fl"><label>Klassetrin</label><select id="f-kl">
+      <option>1.-2. kl.</option><option>3.-4. kl.</option><option>5.-6. kl.</option><option>7.-9. kl.</option>
+    </select></div>
+    <div class="fl"><label>Type</label><select id="f-type">
+      <option value="regel">Regel</option><option value="formel">Formel</option><option value="begreb">Begreb</option>
+    </select></div>
+    <div class="fl"><label>Titel</label><input type="text" id="f-titel" placeholder="fx Areal af trekant"></div>
+    <div class="fl"><label>Ikon</label><input type="text" id="f-icon" placeholder="📐" maxlength="4"></div>
+    <div class="fl"><label>Forklaring</label><textarea id="f-tekst" placeholder="Forklar reglen..."></textarea></div>
+    <div class="fl"><label>Formel / eksempel</label><input type="text" id="f-formel" placeholder="fx A = l × b"></div>
+    <div class="fl"><label>Husk-tip</label><input type="text" id="f-tip" placeholder="fx Husk: længde gange bredde"></div>
+    <div class="mact">
+      <button class="bd" id="btn-del" style="display:none" onclick="delKort()">Slet</button>
+      <button class="bc" onclick="lukkModal()">Annuller</button>
+      <button class="bs" onclick="gemKort()">Gem</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Firebase via CDN (ikke modul)
+const FB_URL = 'https://huskeapp-71950-default-rtdb.europe-west1.firebasedatabase.app';
+
+let elevNavn = localStorage.getItem('hd-elev') || '';
+let elevNoter = {};
+
+async function loadElevNoter() {
+  if (!elevNavn) return;
+  try {
+    const r = await fetch(FB_URL + '/elever/' + encodeURIComponent(elevNavn) + '.json');
+    if (r.ok) {
+      const d = await r.json();
+      if (d) elevNoter = d;
+    }
+  } catch(e) {}
+}
+
+async function gemNote(kortId, tekst) {
+  if (!elevNavn) return;
+  elevNoter[kortId] = tekst;
+  try {
+    await fetch(FB_URL + '/elever/' + encodeURIComponent(elevNavn) + '/' + kortId + '.json', {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(tekst)
+    });
+  } catch(e) {}
+}
+
+function promptElevNavn() {
+  const navn = prompt('Hvad hedder du?
+(Dit navn bruges til at gemme dine noter på alle enheder)');
+  if (!navn || !navn.trim()) return;
+  elevNavn = navn.trim();
+  localStorage.setItem('hd-elev', elevNavn);
+  opdaterElevUI();
+  loadElevNoter().then(() => render());
+}
+
+function opdaterElevUI() {
+  const el = document.getElementById('elev-navn-vis');
+  if (el) el.textContent = elevNavn ? '👤 ' + elevNavn : '👤 Log ind';
+}
+
+const FAGER = [
+  {id:'alle',label:'Alle fag',e:'📚',c:'#534AB7',bg:'#EEEDFE'},
+  {id:'mat',label:'Matematik',e:'🔢',c:'#534AB7',bg:'#EEEDFE'},
+  {id:'his',label:'Historie',e:'🏛️',c:'#BA7517',bg:'#FAEEDA'},
+  {id:'kri',label:'Kristendom',e:'✝️',c:'#0F6E56',bg:'#E1F5EE'},
+  {id:'nat',label:'Natur/teknologi',e:'🌱',c:'#3B6D11',bg:'#EAF3DE'},
+  {id:'idr',label:'Idræt',e:'⚽',c:'#993C1D',bg:'#FAECE7'},
+];
+const KL = ['Alle','1.-2. kl.','3.-4. kl.','5.-6. kl.','7.-9. kl.'];
+const gf = id => FAGER.find(f=>f.id===id)||FAGER[0];
+
+const DATA = [
+  // MATEMATIK
+  {id:'m1',fag:'mat',klasse:'1.-2. kl.',type:'regel',icon:'🔢',titel:'Talsystemet 0-100',tekst:'Vi bruger cifrene 0-9. Tallene er bygget op af tiere og enere. 34 = 3 tiere og 4 enere.',tip:'Tegn tallet som streger for tiere og enere'},
+  {id:'m2',fag:'mat',klasse:'1.-2. kl.',type:'regel',icon:'➕',titel:'Plus og minus',tekst:'Plus = lægger sammen (vi får mere). Minus = tager fra (vi får mindre).',formel:'3 + 4 = 7   |   7 - 4 = 3',tip:'Brug fingre, tallinje eller konkrete ting'},
+  {id:'m3',fag:'mat',klasse:'1.-2. kl.',type:'regel',icon:'⚖️',titel:'Lige og ulige tal',tekst:'Lige tal kan deles i to lige store dele. Ulige tal kan ikke.',formel:'Lige: 2,4,6,8,10...   Ulige: 1,3,5,7,9...',tip:'Kig på det sidste ciffer — 0,2,4,6,8 = lige'},
+  {id:'m4',fag:'mat',klasse:'3.-4. kl.',type:'formel',icon:'✖️',titel:'Gange og division',tekst:'Gange er den hurtige måde at lægge det samme tal sammen mange gange.',formel:'4 × 3 = 12   |   12 ÷ 3 = 4',tip:'Husk gangetabellen'},
+  {id:'m5',fag:'mat',klasse:'3.-4. kl.',type:'formel',icon:'📐',titel:'Areal af rektangel',tekst:'Areal er pladsen inde i en figur. Måles i cm².',formel:'Areal = længde × bredde',tip:'Eks: 4 cm × 3 cm = 12 cm²'},
+  {id:'m6',fag:'mat',klasse:'3.-4. kl.',type:'formel',icon:'📏',titel:'Omkreds',tekst:'Omkreds er den samlede længde rundt om en figur.',formel:'Omkreds = alle sider lagt sammen',tip:'Gå rundt om figuren og læg siderne sammen'},
+  {id:'m7',fag:'mat',klasse:'3.-4. kl.',type:'begreb',icon:'½',titel:'Hvad er en brøk?',tekst:'En brøk viser en del af en helhed. Tæller (øverst) = dine dele. Nævner (nederst) = dele i alt.',formel:'3/4 = 3 ud af 4 dele',tip:'Pizza-trick: nævner = antal stykker, tæller = dine stykker'},
+  {id:'m8',fag:'mat',klasse:'3.-4. kl.',type:'begreb',icon:'🔢',titel:'Primtal',tekst:'Et primtal kan KUN deles med 1 og sig selv. 1 er IKKE et primtal.',formel:'2, 3, 5, 7, 11, 13, 17, 19, 23...',tip:'2 er det eneste lige primtal'},
+  {id:'m9',fag:'mat',klasse:'5.-6. kl.',type:'formel',icon:'½',titel:'Plus med brøker — ens nævner',tekst:'Nævnerne er ens: læg tællerne sammen. Nævneren forbliver.',formel:'2/7 + 3/7 = 5/7',tip:'Nævneren ændrer sig ALDRIG ved plus/minus'},
+  {id:'m10',fag:'mat',klasse:'5.-6. kl.',type:'formel',icon:'½',titel:'Plus med brøker — forskellig nævner',tekst:'Find fælles nævner. Udvid begge brøker. Læg tællerne sammen.',formel:'1/3 + 1/4 = 4/12 + 3/12 = 7/12',tip:'Fælles nævner = mindste fælles multiplum'},
+  {id:'m11',fag:'mat',klasse:'5.-6. kl.',type:'formel',icon:'½',titel:'Minus med brøker',tekst:'Samme som plus — find fælles nævner og træk tællerne fra.',formel:'3/4 - 1/3 = 9/12 - 4/12 = 5/12',tip:'Nævneren ændrer sig ikke'},
+  {id:'m12',fag:'mat',klasse:'5.-6. kl.',type:'formel',icon:'½',titel:'Gange brøker',tekst:'Gang tæller med tæller og nævner med nævner.',formel:'2/3 × 3/4 = 6/12 = 1/2',tip:'Forkort gerne FØR du ganger'},
+  {id:'m13',fag:'mat',klasse:'5.-6. kl.',type:'formel',icon:'½',titel:'Dividere med brøker',tekst:'Vend den anden brøk på hovedet og gang i stedet.',formel:'2/3 ÷ 4/5 = 2/3 × 5/4 = 5/6',tip:'Husk: VEND og GANG'},
+  {id:'m14',fag:'mat',klasse:'5.-6. kl.',type:'formel',icon:'✂️',titel:'Forkorte brøker',tekst:'Del tæller og nævner med den samme fælles faktor.',formel:'12/18 = 2/3   (deler med 6)',tip:'Find den største fælles faktor'},
+  {id:'m15',fag:'mat',klasse:'5.-6. kl.',type:'formel',icon:'🔄',titel:'Brøk til decimaltal',tekst:'Divider tæller med nævner.',formel:'3/4 = 0,75   |   1/2 = 0,5   |   1/4 = 0,25',tip:'Husk de vigtigste: 1/2, 1/4, 3/4, 1/5, 1/10'},
+  {id:'m16',fag:'mat',klasse:'5.-6. kl.',type:'formel',icon:'💯',titel:'Find procenten',tekst:'Hvad procent er delen af det hele?',formel:'Procent = del ÷ hele × 100\nEks: 15 ud af 60 = 25%',tip:'Del divideret med det hele gange 100'},
+  {id:'m17',fag:'mat',klasse:'5.-6. kl.',type:'formel',icon:'💯',titel:'Find delen',tekst:'Hvad er x% af et tal?',formel:'Del = hele × procent ÷ 100\nEks: 30% af 80 = 24',tip:'Eller: 0,3 × 80 = 24'},
+  {id:'m18',fag:'mat',klasse:'5.-6. kl.',type:'formel',icon:'💯',titel:'Find det hele',tekst:'Kender du delen og procenten — find det hele.',formel:'Hele = del ÷ procent × 100\nEks: 24 er 30% af? = 80',tip:'Tjek: 30% af 80 = 24 ✓'},
+  {id:'m19',fag:'mat',klasse:'5.-6. kl.',type:'regel',icon:'🔢',titel:'Rækkefølgen i regning',tekst:'Parenteser, potenser, gange/dividere, plus/minus — i den rækkefølge.',formel:'3 + 4 × 2 = 11   (IKKE 14!)',tip:'Parenteser og potenser ALTID først'},
+  {id:'m20',fag:'mat',klasse:'5.-6. kl.',type:'regel',icon:'➖',titel:'Negative tal — plus og minus',tekst:'Plus et negativt tal er det samme som minus. Minus et negativt er plus.',formel:'5 + (-3) = 2   og   5 - (-3) = 8',tip:'To minustegn = plus'},
+  {id:'m21',fag:'mat',klasse:'5.-6. kl.',type:'formel',icon:'🔢',titel:'Gange med decimaler',tekst:'Gange uden komma. Tæl decimaler og sæt komma til sidst.',formel:'1,2 × 3,4: 12 × 34 = 408 → 4,08\n(2 decimaler i alt)',tip:'Tæl decimaler i begge tal og læg dem sammen'},
+  {id:'m22',fag:'mat',klasse:'5.-6. kl.',type:'formel',icon:'✖️',titel:'Gange/dividere med 10, 100, 1000',tekst:'Gange: flyt komma til højre. Dividere: flyt til venstre.',formel:'3,45 × 10 = 34,5\n3,45 ÷ 10 = 0,345',tip:'Gange = højre. Dividere = venstre'},
+  {id:'m23',fag:'mat',klasse:'5.-6. kl.',type:'begreb',icon:'📊',titel:'Koordinatsystem',tekst:'x-aksen (vandret) og y-aksen (lodret). Punkt skrives (x,y) — x altid først.',formel:'(3, 5) = 3 til højre, 5 op',tip:'Husk: "Gå frem, så op"'},
+  {id:'m24',fag:'mat',klasse:'5.-6. kl.',type:'regel',icon:'⚖️',titel:'Ligninger',tekst:'En ligning er som en vægt — begge sider skal være lige.',formel:'x + 5 = 12  →  x = 7',tip:'Isolér x: flyt alt andet til den anden side'},
+  {id:'m25',fag:'mat',klasse:'5.-6. kl.',type:'formel',icon:'📏',titel:'Målestoksforhold',tekst:'Viser forholdet mellem tegning og virkelighed.',formel:'1:100 → 1 cm = 100 cm i virkelighed',tip:'Eks: 1:50.000 → 1 cm = 500 m'},
+  {id:'m26',fag:'mat',klasse:'5.-6. kl.',type:'formel',icon:'📊',titel:'Middelværdi',tekst:'Læg alle tal sammen og divider med antallet.',formel:'2+4+6+8+10 = 30  →  30÷5 = 6',tip:'Middelværdi kan påvirkes af ekstreme tal'},
+  {id:'m27',fag:'mat',klasse:'5.-6. kl.',type:'formel',icon:'📊',titel:'Median',tekst:'Det midterste tal når tallene er sat i rækkefølge.',formel:'2, 4, 6, 8, 10  →  median = 6',tip:'To midterste tal: tag gennemsnittet af dem'},
+  {id:'m28',fag:'mat',klasse:'5.-6. kl.',type:'begreb',icon:'⭕',titel:'Pi og cirklen',tekst:'Pi (π) ≈ 3,14. r = radius. d = diameter = 2r.',formel:'Omkreds = 2 × π × r\nAreal = π × r²',tip:'Eks: r=5 → Areal = 3,14 × 25 = 78,5 cm²'},
+  {id:'m29',fag:'mat',klasse:'7.-9. kl.',type:'formel',icon:'📐',titel:'Pythagoras',tekst:'I en retvinklet trekant: a² + b² = c² (c er hypotenusen).',formel:'a² + b² = c²\nEks: 3² + 4² = 5²',tip:'Tjek altid: de to korteste sider²  = den længste side²'},
+  {id:'m30',fag:'mat',klasse:'7.-9. kl.',type:'formel',icon:'📈',titel:'Procentvis ændring',tekst:'Beregn stigning eller fald i procent.',formel:'Ændring% = (ny - gammel) ÷ gammel × 100\nStigning 20%: × 1,20   Fald 15%: × 0,85',tip:'Positivt = stigning. Negativt = fald'},
+  {id:'m31',fag:'mat',klasse:'7.-9. kl.',type:'formel',icon:'🔣',titel:'Potenser',tekst:'Et tal ganget med sig selv et bestemt antal gange.',formel:'2³ = 2×2×2 = 8   og   x⁰ = 1 altid!',tip:'2⁰=1, 2¹=2, 2²=4, 2³=8, 2⁴=16'},
+  {id:'m32',fag:'mat',klasse:'7.-9. kl.',type:'formel',icon:'√',titel:'Kvadratrødder',tekst:'Kvadratroden er det modsatte af anden potens.',formel:'√25 = 5   og   √144 = 12',tip:'√1=1, √4=2, √9=3, √16=4, √25=5'},
+  {id:'m33',fag:'mat',klasse:'7.-9. kl.',type:'regel',icon:'🔣',titel:'Samle led i algebra',tekst:'Du kan kun lægge led med SAMME variabel sammen.',formel:'3x + 5x = 8x\n3x + 5y kan IKKE samles',tip:'Tænk x som æbler — æbler + bananer kan ikke samles'},
+  {id:'m34',fag:'mat',klasse:'7.-9. kl.',type:'formel',icon:'⚖️',titel:'Løse ligninger',tekst:'Isolér den ubekendte ved at gøre det samme på begge sider.',formel:'2x + 6 = 14  →  2x = 8  →  x = 4',tip:'ALTID tjek svaret ved at sætte det ind igen'},
+  {id:'m35',fag:'mat',klasse:'3.-4. kl.',type:'begreb',icon:'📐',titel:'Vinkler',tekst:'Ret vinkel: 90°. Spids vinkel: under 90°. Stump vinkel: over 90°.',formel:'Trekant: v1+v2+v3 = 180°\nFirkant: v1+v2+v3+v4 = 360°',tip:'Ret vinkel = hjørnet på et stykke papir'},
+  // HISTORIE
+  {id:'h1',fag:'his',klasse:'3.-4. kl.',type:'begreb',icon:'📜',titel:'Hvad er historie?',tekst:'Historie er læren om fortiden. Vi bruger kilder til at finde ud af hvad der skete.',tip:'Kilde = alt der kan fortælle os om fortiden'},
+  {id:'h2',fag:'his',klasse:'3.-4. kl.',type:'begreb',icon:'⏳',titel:'Tidslinjen',tekst:'f.Kr. tæller baglæns (jo større tal, jo længere tilbage). e.Kr. tæller fremad.',formel:'f.Kr. = før Kristus   |   e.Kr. = efter Kristus',tip:'År 0 er Jesu fødsel. 500 f.Kr. er 500 år FØR Jesus'},
+  {id:'h3',fag:'his',klasse:'3.-4. kl.',type:'begreb',icon:'⚓',titel:'Vikingetiden',tekst:'793-1066 e.Kr. Vikingerne sejlede, handlede og opdagede nye lande.',formel:'793: Første angreb (Lindisfarne)\n985: Grønland opdages\n1066: Vikingetiden slutter',tip:'Vikingerne kaldte sig nordmænd — ikke vikinger'},
+  {id:'h4',fag:'his',klasse:'5.-6. kl.',type:'begreb',icon:'📚',titel:'Primær og sekundær kilde',tekst:'Primær: lavet DA det skete (dagbog, brev, foto). Sekundær: lavet BAGEFTER (lærebog, dokumentar).',tip:'Primær = fra dengang. Sekundær = skrevet om det bagefter'},
+  {id:'h5',fag:'his',klasse:'5.-6. kl.',type:'begreb',icon:'🌍',titel:'2. Verdenskrig',tekst:'Danmarks besættelse 1940-1945.',formel:'1939: Krigen starter\n9/4 1940: Danmark besættes\n5/5 1945: Befrielsen',tip:'Husk: 9. april 1940 og 5. maj 1945'},
+  {id:'h6',fag:'his',klasse:'5.-6. kl.',type:'begreb',icon:'📢',titel:'Propaganda',tekst:'Information der skal påvirke folk til at mene noget bestemt.',tip:'Spørg: Hvem har lavet det? Hvad vil de have mig til at tro?'},
+  {id:'h7',fag:'his',klasse:'5.-6. kl.',type:'begreb',icon:'👑',titel:'Enevælde og demokrati',tekst:'Enevælde: kongen bestemmer alt. Demokrati: folket bestemmer via valg.',formel:'1660: Enevælde\n5. juni 1849: Grundloven — demokrati',tip:'Grundlovsdagen fejres 5. juni'},
+  {id:'h8',fag:'his',klasse:'7.-9. kl.',type:'begreb',icon:'🗺️',titel:'Imperialisme',tekst:'Stærke lande erobrer svagere for at få ressourcer og magt.',formel:'1800-tallet: Europas kolonitid',tip:'Koloni = det besatte land. Moderland = det der besætter'},
+  {id:'h9',fag:'his',klasse:'7.-9. kl.',type:'begreb',icon:'❄️',titel:'Den kolde krig',tekst:'USA mod Sovjetunionen 1947-1991. Ikke direkte krig men oprustning og propaganda.',formel:'NATO = Vesten   Warszawapagten = Østen',tip:'Berlinmuren (1961-1989) var symbolet på den kolde krig'},
+  // KRISTENDOM
+  {id:'k1',fag:'kri',klasse:'1.-2. kl.',type:'begreb',icon:'📖',titel:'Hvad er en myte?',tekst:'En gammel fortælling der prøver at forklare verden. Myter er ikke fakta.',tip:'Nordiske myter, bibelhistorier og folkeeventyr er alle myter'},
+  {id:'k2',fag:'kri',klasse:'3.-4. kl.',type:'begreb',icon:'📚',titel:'Bibelen',tekst:'Den kristne hellige bog. GT: Det Gamle Testamente. NT: Det Nye Testamente.',formel:'GT: jødernes skrifter\nNT: om Jesus og de første kristne',tip:'Evangelierne handler om Jesu liv'},
+  {id:'k3',fag:'kri',klasse:'3.-4. kl.',type:'begreb',icon:'🌍',titel:'De fem store religioner',tekst:'Kristendom, Islam, Jødedom, Hinduisme og Buddhisme.',formel:'Kristendom: 2,4 mia.\nIslam: 1,9 mia.\nHinduisme: 1,2 mia.',tip:'De tre første er abrahamitiske religioner'},
+  {id:'k4',fag:'kri',klasse:'3.-4. kl.',type:'begreb',icon:'🕍',titel:'Jødedom',tekst:'Torah = hellig bog. Synagoge = gudshus. Rabbi = leder. Sabbat = hviledagen.',tip:'Jødedommen er over 3500 år gammel'},
+  {id:'k5',fag:'kri',klasse:'5.-6. kl.',type:'begreb',icon:'☪️',titel:'Islam',tekst:'Koranen = hellig bog. Moske = gudshus. De 5 søjler: trosbekendelse, bøn, almisse, faste, pilgrimsrejse.',tip:'Ramadan = fastemåned. Eid = fejring efter ramadan'},
+  {id:'k6',fag:'kri',klasse:'5.-6. kl.',type:'begreb',icon:'🕉️',titel:'Hinduisme',tekst:'Verdens ældste religion. Karma, reinkarnation og moksha.',formel:'Karma = handlingers konsekvenser\nReinkarnation = sjælen genfødes',tip:'Opstod i Indien for over 4000 år siden'},
+  {id:'k7',fag:'kri',klasse:'5.-6. kl.',type:'begreb',icon:'☸️',titel:'Buddhisme',tekst:'Grundlagt af Buddha ca. 500 f.Kr. Målet er at nå nirvana.',tip:'Buddha betyder den oplyste'},
+  {id:'k8',fag:'kri',klasse:'7.-9. kl.',type:'begreb',icon:'⚖️',titel:'Etik og moral',tekst:'Etik = hvad er rigtigt/forkert. Pligtetik: følg reglerne. Konsekvensetik: se på resultatet.',tip:'Den gyldne regel: Behandl andre som du selv vil behandles'},
+  // NATUR/TEKNOLOGI
+  {id:'n1',fag:'nat',klasse:'1.-2. kl.',type:'regel',icon:'🌱',titel:'Levende og ikke-levende',tekst:'Levende: vokser, spiser, ånder, formerer sig. Ikke-levende: kan ikke.',tip:'Blomst = levende. Sten = ikke levende'},
+  {id:'n2',fag:'nat',klasse:'3.-4. kl.',type:'begreb',icon:'🔗',titel:'Fødekæden',tekst:'Viser hvem der spiser hvem. Starter altid med planter (producenter).',formel:'Sol → Plante → Mus → Ræv → Ørn',tip:'Producent = plante. Konsument = dyr'},
+  {id:'n3',fag:'nat',klasse:'3.-4. kl.',type:'begreb',icon:'💧',titel:'Vandets kredsløb',tekst:'Vand fordamper, stiger op, danner skyer, falder som nedbør og løber tilbage.',formel:'Fordampning → Kondensation → Nedbør → Afstrømning',tip:'Vand skifter form men forsvinder aldrig'},
+  {id:'n4',fag:'nat',klasse:'3.-4. kl.',type:'begreb',icon:'🧊',titel:'Stofskifte — tre tilstande',tekst:'Stoffer kan være fast, flydende eller gasformet.',formel:'Fast → Flydende: smelter\nFlydende → Gas: fordamper',tip:'Is smelter ved 0°C. Vand koger ved 100°C'},
+  {id:'n5',fag:'nat',klasse:'3.-4. kl.',type:'begreb',icon:'🫀',titel:'Hjertets funktion',tekst:'Hjertet pumper blod rundt i kroppen. Blodet bærer ilt og næring til alle celler.',formel:'Hjerte → lunger (henter ilt) → hjerte → kroppen',tip:'Tryk din hånd mod brystet og mærk hjerteslag'},
+  {id:'n6',fag:'nat',klasse:'3.-4. kl.',type:'begreb',icon:'🌍',titel:'Jordens bevægelse',tekst:'Rotation (akse): giver dag og nat (24 timer). Revolution (Sol): giver et år (365 dage).',formel:'Rotation: 24 timer = dag og nat\nRevolution: 365 dage = et år',tip:'Jordens hældning (23,5°) giver årstiderne'},
+  {id:'n7',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'🔬',titel:'Celler',tekst:'Alt levende er bygget af celler. Planteceller har cellevæg og kloroplaster.',formel:'Cellekerne = styrer\nMitokondrie = energi\nKloroplast = fotosyntese',tip:'Menneskekroppen har ca. 37 billioner celler'},
+  {id:'n8',fag:'nat',klasse:'5.-6. kl.',type:'formel',icon:'☀️',titel:'Fotosyntese',tekst:'Planter bruger sollys, vand og CO₂ til at lave sukker og ilt.',formel:'CO₂ + H₂O + lys → sukker + O₂',tip:'Sker i kloroplasterne ved hjælp af klorofyl'},
+  {id:'n9',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'🧬',titel:'Fordøjelsessystemet',tekst:'Mad nedbrydes fra mund til tarm til næringsstoffer kroppen kan bruge.',formel:'Mund → spiserør → mavesæk → tyndtarm → tyktarm',tip:'Tyndtarmen er ca. 6 meter lang'},
+  {id:'n10',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'🧪',titel:'Syrer og baser — pH',tekst:'pH måler om noget er surt eller basisk. pH 7 = neutralt.',formel:'pH 1-6: surt\npH 7: neutralt\npH 8-14: basisk',tip:'Lakmuspapir: rødt = surt, blåt = basisk'},
+  {id:'n11',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'⭐',titel:'Solsystemet',tekst:'8 planeter i orden fra Solen: Merkur, Venus, Jord, Mars, Jupiter, Saturn, Uranus, Neptun.',tip:'Husk: "Men Vi Jordiske Mennesker Jager Slet Ukendte Nationer"'},
+  {id:'n12',fag:'nat',klasse:'7.-9. kl.',type:'formel',icon:'⚡',titel:'Newtons 2. lov',tekst:'Kraft = masse × acceleration.',formel:'F = m × a\nEks: 5 kg × 10 m/s² = 50 N',tip:'Større masse = mere kraft krævet for samme acceleration'},
+  {id:'n13',fag:'nat',klasse:'7.-9. kl.',type:'begreb',icon:'🧬',titel:'DNA og arv',tekst:'DNA er opskriften på alle levende organismer. Vi arver halvt DNA fra mor og halvt fra far.',formel:'DNA → gener → proteiner → egenskaber',tip:'Mennesker deler 99,9% af deres DNA med hinanden'},
+  {id:'n14',fag:'nat',klasse:'7.-9. kl.',type:'begreb',icon:'🌡️',titel:'Klimaforandringer',tekst:'CO₂ og andre gasser holder varmen inde i atmosfæren og opvarmer Jorden.',formel:'CO₂ → drivhuseffekt → global opvarmning',tip:'Jordens temperatur er steget ca. 1,1°C siden 1850'},
+  {id:'n15',fag:'nat',klasse:'7.-9. kl.',type:'begreb',icon:'⚗️',titel:'Kemiske reaktioner',tekst:'En kemisk reaktion ændrer stoffers sammensætning.',formel:'Reaktanter → Produkter\n2H₂ + O₂ → 2H₂O',tip:'Forbrænding er en kemisk reaktion'},
+  {id:'n16',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'💡',titel:'Elektriske kredsløb',tekst:'Et elektrisk kredsløb skal være lukket for at strømmen kan løbe.',formel:'Serie: pærerne afhænger af hinanden\nParallel: pærerne er uafhængige',tip:'Hjemmets stikkontakter er parallelforbundet'},
+  {id:'n17',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'🌬️',titel:'Vedvarende energi',tekst:'Energi der ikke slipper op: sol, vind, vand. Fossile brændsler er ikke vedvarende.',formel:'Vedvarende: sol, vind, vand, biogas\nIkke vedvarende: kul, olie, gas',tip:'Danmark er et af verdens førende lande inden for vindenergi'},
+  // IDRÆT
+  {id:'i1',fag:'idr',klasse:'1.-2. kl.',type:'regel',icon:'🤝',titel:'Fair play',tekst:'Spil ordentligt, respektér hinanden og reglerne.',tip:'Det er ikke sjovt at vinde ved at snyde'},
+  {id:'i2',fag:'idr',klasse:'3.-4. kl.',type:'regel',icon:'🏃',titel:'Opvarmning og nedkøling',tekst:'Opvarmning forbereder kroppen og forebygger skader. Nedkøling sænker pulsen.',formel:'5-10 min. let løb + dynamiske øvelser',tip:'Aldrig springe opvarmning over'},
+  {id:'i3',fag:'idr',klasse:'3.-4. kl.',type:'begreb',icon:'❤️',titel:'Puls og kondition',tekst:'Pulsen er hjerteslagene per minut. God kondition = hjertet er effektivt.',formel:'Maxpuls ≈ 220 − din alder\nTrainingszone: 60-80% af maxpuls',tip:'Hvilepuls for børn: ca. 70-100 slag/min.'},
+  {id:'i4',fag:'idr',klasse:'5.-6. kl.',type:'regel',icon:'🤾',titel:'Håndboldregler',tekst:'3 sekunders regel, 3 skridt. Kun målvogter i eget felt (6 m).',formel:'Mål: 3×2 m\n7-meterstraffekast ved bevidst fejl',tip:'Spilletid: 2×30 min. i senior'},
+  {id:'i5',fag:'idr',klasse:'5.-6. kl.',type:'begreb',icon:'💪',titel:'Musklerne',tekst:'Muskler arbejder i par. Den ene trækker sig sammen, den anden strækker.',formel:'Biceps (bøjer) ↔ Triceps (strækker)',tip:'Muskler vokser ved træning + hvile + protein'},
+  {id:'i6',fag:'idr',klasse:'7.-9. kl.',type:'begreb',icon:'🏋️',titel:'Aerob og anaerob træning',tekst:'Aerob: med ilt, lang tid. Anaerob: uden ilt, kort og intensiv.',formel:'Aerob: løb, cykling\nAnaerob: sprint, styrketræning',tip:'Aerob = fedtforbrænding. Anaerob = muskelopbygning'},
+  {id:'i7',fag:'idr',klasse:'7.-9. kl.',type:'begreb',icon:'🥗',titel:'Kost og sport',tekst:'Kulhydrater = energi. Protein = muskler. Drik vand hele dagen.',formel:'Kulhydrat: brød, pasta, ris\nProtein: kød, æg, bønner',tip:'Spis 2-3 timer før træning'},
+];
+
+let custom = [], videoLinks = {}, favoritter = new Set(), openCards = new Set();
+let editId = null, aktivFag = 'alle', aktivKl = 'Alle', aktivNav = 'regler', soegQ = '';
+let quizData = [], quizIdx = 0, quizScore = 0, quizSvaret = false;
+
+function gem() {
+  try {
+    localStorage.setItem('hd-custom', JSON.stringify(custom));
+    localStorage.setItem('hd-videos', JSON.stringify(videoLinks));
+    localStorage.setItem('hd-favs', JSON.stringify([...favoritter]));
+  } catch(e) {}
+  gemCloud().catch(e => {});
+}
+
+function load() {
+  try { const c = localStorage.getItem('hd-custom'); if(c) custom = JSON.parse(c); } catch(e) {}
+  try { const v = localStorage.getItem('hd-videos'); if(v) videoLinks = JSON.parse(v); } catch(e) {}
+  try { const f = localStorage.getItem('hd-favs'); if(f) favoritter = new Set(JSON.parse(f)); } catch(e) {}
+}
+
+function allData() { return [...DATA, ...custom]; }
+
+function skiftTema() {
+  const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('hd-tema', t);
+  document.getElementById('tema-btn').textContent = t === 'dark' ? '☀️' : '🌙';
+}
+
+function getYtId(url) {
+  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+
+function rb(s) {
+  return (s||'').replace(/\b(\d+)\/([1-9]\d*)\b/g, (_, t, n) =>
+    `<span class="brok"><span class="bt">${t}</span><span class="bn">${n}</span></span>`);
+}
+
+function setNav(n) {
+  aktivNav = n;
+  document.querySelectorAll('.nt').forEach((el,i) => el.classList.toggle('active', ['regler','favoritter','quiz'][i] === n));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('p-' + n).classList.add('active');
+  document.getElementById('filter-bar').style.display = n === 'quiz' ? 'none' : 'block';
+  render();
+}
+
+function render() {
+  soegQ = document.getElementById('search').value.toLowerCase();
+  // Fag tabs
+  document.getElementById('fag-bar').innerHTML = FAGER.map(f =>
+    `<button class="ft${aktivFag===f.id?' active':''}"
+      style="${aktivFag===f.id?'background:'+f.bg+';color:'+f.c+';border-color:'+f.c:''}"
+      onclick="aktivFag='${f.id}';render()">${f.e} ${f.label}</button>`).join('');
+  // Kl tabs
+  document.getElementById('kl-bar').innerHTML = KL.map(k =>
+    `<button class="kt${aktivKl===k?' active':''}" onclick="aktivKl='${k}';render()">${k}</button>`).join('');
+
+  if (aktivNav === 'regler') renderRegler();
+  if (aktivNav === 'favoritter') renderFav();
+  if (aktivNav === 'quiz' && !quizData.length) renderQuizStart();
+}
+
+function filtrer() {
+  return allData().filter(d => {
+    if (aktivFag !== 'alle' && d.fag !== aktivFag) return false;
+    if (aktivKl !== 'Alle' && d.klasse !== aktivKl) return false;
+    if (soegQ && !d.titel.toLowerCase().includes(soegQ) && !(d.tekst||'').toLowerCase().includes(soegQ)) return false;
+    return true;
+  });
+}
+
+function renderRegler() {
+  const data = filtrer();
+  if (!data.length) { document.getElementById('o-regler').innerHTML = '<div class="no-res">🔍 Ingen resultater</div>'; return; }
+  const g = {regel:[], formel:[], begreb:[]};
+  data.forEach(d => (g[d.type] || g.begreb).push(d));
+  const lbl = {regel:'📋 Regler', formel:'🧮 Formler', begreb:'💡 Begreber'};
+  document.getElementById('o-regler').innerHTML = ['regel','formel','begreb']
+    .filter(t => g[t].length)
+    .map(t => `<div class="sh">${lbl[t]}</div><div class="cards">${g[t].map(kort).join('')}</div>`)
+    .join('');
+}
+
+function renderFav() {
+  const favs = allData().filter(d => favoritter.has(d.id));
+  document.getElementById('o-fav').innerHTML = favs.length
+    ? `<div class="cards">${favs.map(kort).join('')}</div>`
+    : '<div class="no-res">⭐ Ingen favoritter endnu — åbn et kort og klik "Favorit"</div>';
+}
+
+function kort(d) {
+  const f = gf(d.fag);
+  const isOpen = openCards.has(d.id);
+  const isFav = favoritter.has(d.id);
+  const isCustom = custom.find(c => c.id === d.id);
+  const ytId = videoLinks[d.id];
+  const note = elevNoter[d.id] || '';
+
+  let noterHtml = '';
+  if (elevNavn) {
+    noterHtml = '<div style="margin-top:.75rem" onclick="event.stopPropagation()">' +
+      '<div style="font-size:11px;color:var(--muted);margin-bottom:4px">📝 Mine noter</div>' +
+      '<textarea data-id="' + d.id + '" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;height:70px;resize:vertical" placeholder="Skriv dine egne noter her..." onchange="gemNote(this.dataset.id,this.value)">' + note + '</textarea></div>';
+  } else {
+    noterHtml = '<div style="margin-top:.75rem;font-size:12px;color:var(--muted);font-style:italic" onclick="event.stopPropagation()">💡 <button onclick="promptElevNavn()" style="background:none;border:none;color:#C4722A;cursor:pointer;font-size:12px;text-decoration:underline">Log ind</button> for at skrive egne noter</div>';
+  }
+
+  return '<div class="card' + (isOpen?' open':'') + (isFav?' fav':'') + '" onclick="togCard(\'' + d.id + '\')">' +
+    '<div class="ctop">' +
+      '<div class="ci" style="background:' + f.bg + ';color:' + f.c + '">' + (d.icon||'📌') + '</div>' +
+      '<div class="ch">' +
+        '<div class="ctit">' + d.titel + '</div>' +
+        '<div class="cmet">' + d.klasse + ' · ' + d.type + (isFav?' · ⭐':'') + (ytId?' · 📺':'') + '</div>' +
+      '</div>' +
+      '<div class="carr">▼</div>' +
+    '</div>' +
+    '<div class="cbody">' +
+      '<div class="ctekst">' + rb(d.tekst||'').replace(/
+/g,'<br>') + '</div>' +
+      (d.formel ? '<div class="cformel">' + rb(d.formel).replace(/
+/g,'<br>') + '</div>' : '') +
+      (d.tip ? '<div class="ctip">💡 ' + d.tip + '</div>' : '') +
+      (ytId ? '<div class="vw"><iframe src="https://www.youtube.com/embed/' + ytId + '" allowfullscreen></iframe></div>' : '') +
+      noterHtml +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:.5rem;flex-wrap:wrap;gap:5px">' +
+        '<span class="cbadge" style="background:' + f.bg + ';color:' + f.c + '">' + f.e + ' ' + f.label + '</span>' +
+        '<div style="display:flex;gap:5px">' +
+          '<button class="cact' + (isFav?' on':'') + '" onclick="togFav(\'' + d.id + '\',event)">' + (isFav?'⭐':'☆') + ' Favorit</button>' +
+          (ytId
+            ? '<button class="cact" onclick="fjernVideo(\'' + d.id + '\',event)">🗑 Video</button>'
+            : '<button class="cact" onclick="tilfoejVideo(\'' + d.id + '\',event)">📺 Video</button>') +
+          (isCustom ? '<button class="cact" onclick="event.stopPropagation();openEdit(\'' + d.id + '\')">✏️</button>' : '') +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function togCard(id) { openCards.has(id)?openCards.delete(id):openCards.add(id); render(); }
+function togFav(id, e) { e.stopPropagation(); favoritter.has(id)?favoritter.delete(id):favoritter.add(id); gem(); render(); }
+
+function tilfoejVideo(id, e) {
+  e.stopPropagation();
+  const url = prompt('Indsæt YouTube-link:');
+  if (!url) return;
+  const ytId = getYtId(url);
+  if (!ytId) { alert('Ikke et gyldigt YouTube-link'); return; }
+  videoLinks[id] = ytId; gem(); render();
+}
+function fjernVideo(id, e) { e.stopPropagation(); delete videoLinks[id]; gem(); render(); }
+
+// QUIZ
+function renderQuizStart() {
+  document.getElementById('o-quiz').innerHTML = `
+    <div class="qcard">
+      <div style="font-size:48px;margin-bottom:.75rem">🧠</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:.5rem">Quiz dig selv!</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:1.5rem">Test om du husker reglerne</div>
+      <div style="margin-bottom:1rem"><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">Vælg fag</label>
+        <select id="q-fag" style="width:100%;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif">
+          <option value="alle">Alle fag</option>
+          ${FAGER.slice(1).map(f=>`<option value="${f.id}">${f.e} ${f.label}</option>`).join('')}
+        </select>
+      </div>
+      <div style="margin-bottom:1.5rem"><label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">Klassetrin</label>
+        <select id="q-kl" style="width:100%;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif">
+          ${KL.map(k=>`<option>${k}</option>`).join('')}
+        </select>
+      </div>
+      <button class="btn btn-p" style="width:100%" onclick="startQuiz()">Start quiz →</button>
+    </div>`;
+}
+
+function startQuiz() {
+  const fag = document.getElementById('q-fag').value;
+  const kl = document.getElementById('q-kl').value;
+  let pool = allData().filter(d => {
+    if (fag !== 'alle' && d.fag !== fag) return false;
+    if (kl !== 'Alle' && d.klasse !== kl) return false;
+    return d.tekst && d.titel;
+  });
+  if (pool.length < 3) { alert('Ikke nok kort — vælg flere fag eller klassetrin'); return; }
+  quizData = pool.sort(() => Math.random()-.5).slice(0,10);
+  quizIdx = 0; quizScore = 0;
+  visQuizSpm();
+}
+
+function visQuizSpm() {
+  if (quizIdx >= quizData.length) { visQuizSlut(); return; }
+  const k = quizData[quizIdx];
+  const f = gf(k.fag);
+  quizSvaret = false;
+  const rigtig = k.titel;
+  const sammePool = allData().filter(d => d.id !== k.id && d.titel !== rigtig && d.fag === k.fag);
+  const pool2 = sammePool.length >= 3 ? sammePool : allData().filter(d => d.id !== k.id && d.titel !== rigtig);
+  const andre = pool2.sort(() => Math.random()-.5).slice(0,3).map(d => d.titel);
+  const opts = [rigtig,...andre].sort(() => Math.random()-.5);
+
+  document.getElementById('o-quiz').innerHTML = `
+    <div class="qcard">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:.5rem">Spørgsmål ${quizIdx+1} af ${quizData.length}</div>
+      <div style="background:${f.bg};color:${f.c};display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;margin-bottom:.75rem">${f.e} ${f.label} · ${k.klasse}</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:.5rem">Hvad hedder denne regel?</div>
+      <div style="background:var(--surface2);border-radius:10px;padding:1rem;margin-bottom:1.25rem;font-size:14px;line-height:1.6;text-align:left">
+        ${(k.tekst||'').substring(0,150)}${(k.tekst||'').length>150?'...':''}
+        ${k.formel?`<div style="font-family:monospace;font-size:13px;margin-top:.5rem;color:var(--accent)">${k.formel.split('\n')[0]}</div>`:''}
+      </div>
+      ${opts.map(o => `<button class="qopt" onclick="svarQuiz('${o.replace(/'/g,"\\'")}','${rigtig.replace(/'/g,"\\'")}',this)">${o}</button>`).join('')}
+      <div id="q-feedback" style="min-height:36px"></div>
+    </div>`;
+}
+
+function svarQuiz(svar, rigtig, el) {
+  if (quizSvaret) return;
+  quizSvaret = true;
+  const ok = svar === rigtig;
+  if (ok) quizScore++;
+  document.querySelectorAll('.qopt').forEach(b => {
+    b.onclick = null;
+    if (b.textContent === rigtig) b.classList.add('ok');
+    else if (b === el && !ok) b.classList.add('fej');
+  });
+  document.getElementById('q-feedback').innerHTML =
+    `<div style="margin-top:.5rem;font-size:14px;color:${ok?'#059669':'#DC2626'}">${ok?'✓ Rigtigt!':'✗ Forkert — det var: '+rigtig}</div>`;
+  setTimeout(() => { quizIdx++; visQuizSpm(); }, 1500);
+}
+
+function visQuizSlut() {
+  const pct = Math.round(quizScore/quizData.length*100);
+  const e = pct>=80?'🎉':pct>=50?'👍':'💪';
+  const t = pct>=80?'Fremragende!':pct>=50?'Godt klaret!':'Øv lidt mere!';
+  document.getElementById('o-quiz').innerHTML = `
+    <div class="qcard">
+      <div style="font-size:56px;margin-bottom:.5rem">${e}</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:.25rem">${t}</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:48px;margin:.5rem 0">${quizScore}/${quizData.length}</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:1.5rem">${pct}% korrekte</div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-p" onclick="quizData=[];renderQuizStart()">Ny quiz</button>
+        <button class="btn btn-g" onclick="quizIdx=0;quizScore=0;visQuizSpm()">Prøv igen</button>
+      </div>
+    </div>`;
+}
+
+// MODAL
+function openModal() {
+  editId = null;
+  document.getElementById('m-titel').textContent = 'Tilføj regel';
+  document.getElementById('btn-del').style.display = 'none';
+  ['f-titel','f-icon','f-tekst','f-formel','f-tip'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-icon').value = '📌';
+  document.getElementById('mbg').classList.add('open');
+  setTimeout(() => document.getElementById('f-titel').focus(), 200);
+}
+function openEdit(id) {
+  const d = custom.find(c => c.id === id); if (!d) return;
+  editId = id;
+  document.getElementById('m-titel').textContent = 'Rediger';
+  document.getElementById('btn-del').style.display = 'inline-flex';
+  document.getElementById('f-fag').value = d.fag;
+  document.getElementById('f-kl').value = d.klasse;
+  document.getElementById('f-type').value = d.type;
+  document.getElementById('f-titel').value = d.titel;
+  document.getElementById('f-icon').value = d.icon||'📌';
+  document.getElementById('f-tekst').value = d.tekst||'';
+  document.getElementById('f-formel').value = d.formel||'';
+  document.getElementById('f-tip').value = d.tip||'';
+  document.getElementById('mbg').classList.add('open');
+}
+function lukkModal() { document.getElementById('mbg').classList.remove('open'); }
+function lukvBg(e) { if (e.target.id === 'mbg') lukkModal(); }
+
+function gemKort() {
+  const titel = document.getElementById('f-titel').value.trim();
+  if (!titel) { document.getElementById('f-titel').focus(); return; }
+  const obj = {
+    id: editId||'c-'+Date.now(), fag: document.getElementById('f-fag').value,
+    klasse: document.getElementById('f-kl').value, type: document.getElementById('f-type').value,
+    titel, icon: document.getElementById('f-icon').value||'📌',
+    tekst: document.getElementById('f-tekst').value,
+    formel: document.getElementById('f-formel').value,
+    tip: document.getElementById('f-tip').value,
+  };
+  if (editId) custom = custom.map(c => c.id===editId?obj:c); else custom.push(obj);
+  gem(); lukkModal(); render();
+}
+function delKort() {
+  if (!confirm('Slet?')) return;
+  custom = custom.filter(c => c.id !== editId);
+  gem(); lukkModal(); render();
+}
+
+const BIN_ID = '6a1eb7a2f5f4af5e29ac8f25';
+const API_KEY = '$2a$10$HOboKcjEBs.49AjG1RwA0Ot7AJgev8H49spOus1UnNe0JSD4It7f6';
+
+async async function gemCloud() {
+  try {
+    await fetch('https://api.jsonbin.io/v3/b/' + BIN_ID, {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json','X-Master-Key':API_KEY},
+      body: JSON.stringify({custom, videos: videoLinks, favs: [...favoritter]})
+    });
+  } catch(e) {}
+}
+
+async function hentCloud() {
+  try {
+    const r = await fetch('https://api.jsonbin.io/v3/b/' + BIN_ID + '/latest', {
+      headers: {'X-Master-Key': API_KEY, 'X-Bin-Meta': 'false'}
+    });
+    if (!r.ok) return;
+    const d = await r.json();
+    // Kun opdater hvis der faktisk er egne data
+    if (d && (d.custom?.length > 0 || Object.keys(d.videos||{}).length > 0 || (d.favs||[]).length > 0)) {
+      custom = d.custom || [];
+      videoLinks = d.videos || {};
+      favoritter = new Set(d.favs || []);
+      localStorage.setItem('hd-custom', JSON.stringify(custom));
+      localStorage.setItem('hd-videos', JSON.stringify(videoLinks));
+      localStorage.setItem('hd-favs', JSON.stringify([...favoritter]));
+      render();
+    }
+  } catch(e) {}
+}
+
+
+
+// INIT
+const t = localStorage.getItem('hd-tema')||'light';
+document.documentElement.setAttribute('data-theme',t);
+document.getElementById('tema-btn').textContent = t==='dark'?'☀️':'🌙';
+document.addEventListener('keydown', e => { if(e.key==='Escape') lukkModal(); });
+load();
+render();
+hentCloud();
+opdaterElevUI();
+if (elevNavn) loadElevNoter().then(() => render());
+</script>
+</body>
+</html>
