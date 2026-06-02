@@ -149,48 +149,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 <script>
 // Firebase via CDN (ikke modul)
-const FB_URL = 'https://huskeapp-71950-default-rtdb.europe-west1.firebasedatabase.app';
-
-let elevNavn = localStorage.getItem('hd-elev') || '';
-let elevNoter = {};
-
-async function loadElevNoter() {
-  if (!elevNavn) return;
-  try {
-    const r = await fetch(FB_URL + '/elever/' + encodeURIComponent(elevNavn) + '.json');
-    if (r.ok) {
-      const d = await r.json();
-      if (d) elevNoter = d;
-    }
-  } catch(e) {}
-}
-
-async function gemNote(kortId, tekst) {
-  if (!elevNavn) return;
-  elevNoter[kortId] = tekst;
-  try {
-    await fetch(FB_URL + '/elever/' + encodeURIComponent(elevNavn) + '/' + kortId + '.json', {
-      method: 'PUT',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(tekst)
-    });
-  } catch(e) {}
-}
-
-function promptElevNavn() {
-  const navn = prompt('Hvad hedder du?
-(Dit navn bruges til at gemme dine noter på alle enheder)');
-  if (!navn || !navn.trim()) return;
-  elevNavn = navn.trim();
-  localStorage.setItem('hd-elev', elevNavn);
-  opdaterElevUI();
-  loadElevNoter().then(() => render());
-}
-
-function opdaterElevUI() {
-  const el = document.getElementById('elev-navn-vis');
-  if (el) el.textContent = elevNavn ? '👤 ' + elevNavn : '👤 Log ind';
-}
 
 const FAGER = [
   {id:'alle',label:'Alle fag',e:'📚',c:'#534AB7',bg:'#EEEDFE'},
@@ -297,7 +255,6 @@ function gem() {
     localStorage.setItem('hd-videos', JSON.stringify(videoLinks));
     localStorage.setItem('hd-favs', JSON.stringify([...favoritter]));
   } catch(e) {}
-  gemCloud().catch(e => {});
 }
 
 function load() {
@@ -384,16 +341,6 @@ function kort(d) {
   const isFav = favoritter.has(d.id);
   const isCustom = custom.find(c => c.id === d.id);
   const ytId = videoLinks[d.id];
-  const note = elevNoter[d.id] || '';
-
-  let noterHtml = '';
-  if (elevNavn) {
-    noterHtml = '<div style="margin-top:.75rem" onclick="event.stopPropagation()">' +
-      '<div style="font-size:11px;color:var(--muted);margin-bottom:4px">📝 Mine noter</div>' +
-      '<textarea data-id="' + d.id + '" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-family:DM Sans,sans-serif;height:70px;resize:vertical" placeholder="Skriv dine egne noter her..." onchange="gemNote(this.dataset.id,this.value)">' + note + '</textarea></div>';
-  } else {
-    noterHtml = '<div style="margin-top:.75rem;font-size:12px;color:var(--muted);font-style:italic" onclick="event.stopPropagation()">💡 <button onclick="promptElevNavn()" style="background:none;border:none;color:#C4722A;cursor:pointer;font-size:12px;text-decoration:underline">Log ind</button> for at skrive egne noter</div>';
-  }
 
   return '<div class="card' + (isOpen?' open':'') + (isFav?' fav':'') + '" onclick="togCard(\'' + d.id + '\')">' +
     '<div class="ctop">' +
@@ -405,20 +352,16 @@ function kort(d) {
       '<div class="carr">▼</div>' +
     '</div>' +
     '<div class="cbody">' +
-      '<div class="ctekst">' + rb(d.tekst||'').replace(/
-/g,'<br>') + '</div>' +
-      (d.formel ? '<div class="cformel">' + rb(d.formel).replace(/
-/g,'<br>') + '</div>' : '') +
+      '<div class="ctekst">' + rb(d.tekst||'').replace(/\n/g,'<br>') + '</div>' +
+      (d.formel ? '<div class="cformel">' + rb(d.formel).replace(/\n/g,'<br>') + '</div>' : '') +
       (d.tip ? '<div class="ctip">💡 ' + d.tip + '</div>' : '') +
       (ytId ? '<div class="vw"><iframe src="https://www.youtube.com/embed/' + ytId + '" allowfullscreen></iframe></div>' : '') +
-      noterHtml +
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:.5rem;flex-wrap:wrap;gap:5px">' +
         '<span class="cbadge" style="background:' + f.bg + ';color:' + f.c + '">' + f.e + ' ' + f.label + '</span>' +
         '<div style="display:flex;gap:5px">' +
           '<button class="cact' + (isFav?' on':'') + '" onclick="togFav(\'' + d.id + '\',event)">' + (isFav?'⭐':'☆') + ' Favorit</button>' +
-          (ytId
-            ? '<button class="cact" onclick="fjernVideo(\'' + d.id + '\',event)">🗑 Video</button>'
-            : '<button class="cact" onclick="tilfoejVideo(\'' + d.id + '\',event)">📺 Video</button>') +
+          (ytId ? '<button class="cact" onclick="fjernVideo(\'' + d.id + '\',event)">🗑 Video</button>'
+                : '<button class="cact" onclick="tilfoejVideo(\'' + d.id + '\',event)">📺 Video</button>') +
           (isCustom ? '<button class="cact" onclick="event.stopPropagation();openEdit(\'' + d.id + '\')">✏️</button>' : '') +
         '</div>' +
       '</div>' +
@@ -622,9 +565,13 @@ document.getElementById('tema-btn').textContent = t==='dark'?'☀️':'🌙';
 document.addEventListener('keydown', e => { if(e.key==='Escape') lukkModal(); });
 load();
 render();
-hentCloud();
-opdaterElevUI();
-if (elevNavn) loadElevNoter().then(() => render());
+// INIT
+const t = localStorage.getItem('hd-tema')||'light';
+document.documentElement.setAttribute('data-theme',t);
+document.getElementById('tema-btn').textContent = t==='dark'?'☀️':'🌙';
+document.addEventListener('keydown', e => { if(e.key==='Escape') lukkModal(); });
+load();
+render();
 </script>
 </body>
 </html>
