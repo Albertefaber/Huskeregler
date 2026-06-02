@@ -147,21 +147,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+<script>
+// Firebase via CDN (ikke modul)
+const FB_URL = 'https://huskeapp-71950-default-rtdb.europe-west1.firebasedatabase.app';
 
-const fbApp = initializeApp({databaseURL:'https://huskeapp-71950-default-rtdb.europe-west1.firebasedatabase.app'});
-const fbDb = getDatabase(fbApp);
-
-let elevNavn = localStorage.getItem('hd-elev')||'';
+let elevNavn = localStorage.getItem('hd-elev') || '';
 let elevNoter = {};
 
 async function loadElevNoter() {
   if (!elevNavn) return;
   try {
-    const snap = await get(ref(fbDb, 'elever/' + elevNavn));
-    if (snap.exists()) elevNoter = snap.val();
+    const r = await fetch(FB_URL + '/elever/' + encodeURIComponent(elevNavn) + '.json');
+    if (r.ok) {
+      const d = await r.json();
+      if (d) elevNoter = d;
+    }
   } catch(e) {}
 }
 
@@ -169,12 +169,17 @@ async function gemNote(kortId, tekst) {
   if (!elevNavn) return;
   elevNoter[kortId] = tekst;
   try {
-    await set(ref(fbDb, 'elever/' + elevNavn + '/' + kortId), tekst);
+    await fetch(FB_URL + '/elever/' + encodeURIComponent(elevNavn) + '/' + kortId + '.json', {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(tekst)
+    });
   } catch(e) {}
 }
 
 function promptElevNavn() {
-  const navn = prompt('Hvad hedder du? (Dit navn bruges til at gemme dine noter)');
+  const navn = prompt('Hvad hedder du?
+(Dit navn bruges til at gemme dine noter på alle enheder)');
   if (!navn || !navn.trim()) return;
   elevNavn = navn.trim();
   localStorage.setItem('hd-elev', elevNavn);
@@ -186,11 +191,6 @@ function opdaterElevUI() {
   const el = document.getElementById('elev-navn-vis');
   if (el) el.textContent = elevNavn ? '👤 ' + elevNavn : '👤 Log ind';
 }
-
-window.promptElevNavn = promptElevNavn;
-window.gemNote = gemNote;
-window.getElevNavn = () => elevNavn;
-window.getElevNoter = () => elevNoter;
 
 const FAGER = [
   {id:'alle',label:'Alle fag',e:'📚',c:'#534AB7',bg:'#EEEDFE'},
@@ -623,8 +623,8 @@ document.documentElement.setAttribute('data-theme',t);
 document.getElementById('tema-btn').textContent = t==='dark'?'☀️':'🌙';
 document.addEventListener('keydown', e => { if(e.key==='Escape') lukkModal(); });
 load();
-render(); // Vis kort med det samme
-hentCloud(); // Hent egne data fra skyen i baggrunden
+render();
+hentCloud();
 opdaterElevUI();
 if (elevNavn) loadElevNoter().then(() => render());
 </script>
