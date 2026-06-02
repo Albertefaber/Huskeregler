@@ -580,7 +580,7 @@ function delKort() {
 const BIN_ID = '6a1eb7a2f5f4af5e29ac8f25';
 const API_KEY = '$2a$10$HOboKcjEBs.49AjG1RwA0Ot7AJgev8H49spOus1UnNe0JSD4It7f6';
 
-async function gemCloud() {
+async async function gemCloud() {
   try {
     await fetch('https://api.jsonbin.io/v3/b/' + BIN_ID, {
       method: 'PUT',
@@ -614,7 +614,7 @@ async function hentCloud() {
 const gemLokal = gem;
 function gem() {
   gemLokal();
-  gemCloud();
+  gemCloud().catch(e => {});
 }
 
 // INIT
