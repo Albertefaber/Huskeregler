@@ -6,11 +6,22 @@
 <title>Huskdet! — Vipperød Skole</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-[data-theme="light"]{--bg:#F7F5F0;--surface:#fff;--surface2:#F0EDE8;--border:#E2DDD6;--text:#1A1816;--muted:#8A8480;--faint:#C8C4BF;--sidebar:#1A1816;--stop:#F7F5F0}
-[data-theme="dark"]{--bg:#141210;--surface:#1E1C1A;--surface2:#252321;--border:#333;--text:#F0EDE8;--muted:#8A8480;--faint:#555;--sidebar:#0E0C0A;--stop:#F0EDE8}
-:root{--accent:#C4722A;--r:14px}
+[data-theme="light"]{--bg:#F5F3EE;--surface:#fff;--surface2:#EDEAE4;--border:#DDD9D0;--text:#1A1816;--muted:#8A8480;--faint:#C8C4BF;--sidebar:#1A1816;--stop:#F5F3EE;--card-shadow:0 2px 8px rgba(0,0,0,.06)}
+[data-theme="dark"]{--bg:#141210;--surface:#1E1C1A;--surface2:#252321;--border:#333;--text:#F0EDE8;--muted:#8A8480;--faint:#555;--sidebar:#0E0C0A;--stop:#F0EDE8;--card-shadow:0 2px 8px rgba(0,0,0,.2)}
+:root{--accent:#C4722A;--r:16px;
+  --mat:#534AB7;--mat-bg:#EEEDFE;
+  --his:#BA7517;--his-bg:#FAEEDA;
+  --kri:#0F6E56;--kri-bg:#E1F5EE;
+  --nat:#3B6D11;--nat-bg:#EAF3DE;
+  --idr:#993C1D;--idr-bg:#FAECE7;
+}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;transition:background .2s,color .2s}
+
+/* Brøkstreger */
+.brok{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;font-size:.9em;margin:0 2px}
+.brok-t{border-bottom:1.5px solid currentColor;padding:0 3px 1px;font-size:.85em}
+.brok-n{padding:1px 3px 0;font-size:.85em}
 
 /* HEADER */
 .header{background:var(--sidebar);padding:.9rem 1.25rem;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50;flex-wrap:wrap}
@@ -50,21 +61,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:8px;margin-bottom:.5rem}
 
 /* KORT */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.85rem;cursor:pointer;transition:box-shadow .15s;position:relative}
-.card:hover{box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem;cursor:pointer;transition:all .18s;position:relative;box-shadow:var(--card-shadow)}
+.card:hover{box-shadow:0 4px 16px rgba(0,0,0,.1);transform:translateY(-1px)}
 .card.fav{border-left:3px solid var(--accent)}
 .card-top{display:flex;align-items:flex-start;gap:8px}
-.cicon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.cicon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .chead{flex:1;min-width:0}
-.ctitle{font-size:13px;font-weight:500;line-height:1.3}
-.cmeta{font-size:10px;color:var(--muted);margin-top:2px}
+.ctitle{font-size:14px;font-weight:500;line-height:1.3}
+.cmeta{font-size:11px;color:var(--muted);margin-top:3px}
 .carr{font-size:11px;color:var(--faint);transition:transform .2s;margin-top:2px;flex-shrink:0}
 .card.open .carr{transform:rotate(180deg)}
 .cbody{display:none;margin-top:.7rem;padding-top:.7rem;border-top:1px solid var(--border)}
 .card.open .cbody{display:block}
 .ctekst{font-size:13px;line-height:1.6}
-.cformel{background:var(--surface2);border-radius:8px;padding:.5rem .8rem;font-family:monospace;font-size:13px;margin:.4rem 0;line-height:1.5}
-.ctip{font-size:12px;color:var(--muted);font-style:italic;margin-top:.4rem}
+.cformel{background:var(--surface2);border-radius:10px;padding:.7rem 1rem;font-family:monospace;font-size:13px;margin:.5rem 0;line-height:1.7;border-left:3px solid var(--accent)}
+.ctip{font-size:12px;color:var(--muted);font-style:italic;margin-top:.5rem;display:flex;align-items:flex-start;gap:5px}
 .cbadge{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:99px;margin-top:.4rem}
 .card-actions{display:flex;gap:5px;margin-top:.6rem;flex-wrap:wrap}
 .caction{font-size:11px;padding:3px 8px;border:1px solid var(--border);border-radius:6px;background:none;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif}
@@ -293,6 +304,59 @@ const BUILT_IN = [
   {id:'b60',fag:'idr',klasse:'5.-6. kl.',type:'begreb',icon:'💪',titel:'Musklerne',tekst:'Muskler arbejder i par. Den ene trækker sig sammen, den anden strækker.',formel:'Biceps (bøjer) ↔ Triceps (strækker)',tip:'Muskler vokser ved træning + hvile + protein'},
   {id:'b62',fag:'idr',klasse:'7.-9. kl.',type:'begreb',icon:'🏋️',titel:'Aerob og anaerob træning',tekst:'Aerob: med ilt, moderat intensitet, lang tid. Anaerob: uden ilt, høj intensitet, kort.',formel:'Aerob: løb, cykling (>2 min.)\nAnaerob: sprint, styrketræning (<2 min.)',tip:'Aerob = fedtforbrænding. Anaerob = muskelopbygning'},
   {id:'b63',fag:'idr',klasse:'7.-9. kl.',type:'begreb',icon:'🥗',titel:'Kost og ernæring til sport',tekst:'Kulhydrater = energi. Protein = muskler. Fedt = langt brændstof.',formel:'Kulhydrat: brød, pasta, ris\nProtein: kød, æg, bønner',tip:'Spis 2-3 timer før træning. Drik vand!'},
+
+  // ══ NATUR/TEKNOLOGI — KROPPEN ══
+  {id:'krop1',fag:'nat',klasse:'3.-4. kl.',type:'begreb',icon:'🫀',titel:'Hjertets funktion',tekst:'Hjertet er en muskel der pumper blod rundt i kroppen. Det slår ca. 70 gange i minuttet. Blodet bærer ilt og næring til alle celler.',formel:'Hjerte → lunger (henter ilt) → hjerte → resten af kroppen',tip:'Tryk din hånd mod brystet og mærk hjerteslag'},
+  {id:'krop2',fag:'nat',klasse:'3.-4. kl.',type:'begreb',icon:'🫁',titel:'Lungerne og vejrtrækning',tekst:'Lungerne optager ilt fra luften og afgiver kuldioxid. Vi trækker vejret ca. 15 gange i minuttet.',formel:'Ind: ilt (O₂) optages
+Ud: kuldioxid (CO₂) afgives',tip:'Prøv at holde vejret — mærk hvornår kroppen vil have mere ilt'},
+  {id:'krop3',fag:'nat',klasse:'3.-4. kl.',type:'begreb',icon:'🦴',titel:'Skelettet',tekst:'Skelettet giver kroppen form og beskytter organer. Vi har ca. 206 knogler. Knogler består af kalk og er levende væv.',tip:'Den mindste knogle er i øret. Den største er lårbenet'},
+  {id:'krop4',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'🧬',titel:'Fordøjelsessystemet',tekst:'Mad nedbrydes fra mund til tarm. Enzymer hjælper med at nedbryde maden til næringsstoffer kroppen kan bruge.',formel:'Mund → spiserør → mavesæk → tyndtarm → tyktarm',tip:'Tyndtarmen er ca. 6 meter lang og optager næringsstoffer'},
+  {id:'krop5',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'🧠',titel:'Nervesystemet',tekst:'Hjernen styrer kroppen via nerverne. Signaler rejser med lynets hastighed. Der er to typer: det centrale (hjerne + rygmarv) og det perifere (resten).',formel:'Hjerne + rygmarv = centralt nervesystem
+Alle andre nerver = perifert nervesystem',tip:'Hjernen bruger ca. 20% af kroppens energi selvom den kun vejer 2%'},
+  {id:'krop6',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'🩸',titel:'Blodet og immunsystemet',tekst:'Blodet transporterer ilt, næring og affaldsstoffer. De hvide blodlegemer bekæmper sygdomme. Røde blodlegemer bærer ilt.',formel:'Røde blodlegemer: bærer ilt
+Hvide blodlegemer: bekæmper bakterier og virus
+Blodplader: får blodet til at størkne',tip:'En voksen har ca. 5 liter blod'},
+  {id:'krop7',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'🧬',titel:'Hormoner og kirtler',tekst:'Hormoner er kemiske budbringere der styrer mange af kroppens funktioner — vækst, søvn, stemning og stofskifte.',formel:'Bugspytkirtlen: insulin (blodsukkeret)
+Skjoldbruskkirtlen: stofskifte
+Binyrer: adrenalin (kamp/flugt)',tip:'Adrenalin frigives ved fare og giver dig ekstra energi og styrke'},
+
+  // ══ NATUR/TEKNOLOGI — STOFFER OG MATERIALER ══
+  {id:'stof1',fag:'nat',klasse:'3.-4. kl.',type:'begreb',icon:'🧊',titel:'Stofskifte — tre tilstande',tekst:'Stoffer kan være fast, flydende eller gasformet. Vand kan fx være is (fast), vand (flydende) eller damp (gas).',formel:'Fast → Flydende: smelter
+Flydende → Gas: fordamper
+Gas → Flydende: kondenserer',tip:'Is smelter ved 0°C. Vand koger ved 100°C'},
+  {id:'stof2',fag:'nat',klasse:'3.-4. kl.',type:'begreb',icon:'🧲',titel:'Magnetisme',tekst:'Magneter tiltrækker jern, nikkel og kobolt. Alle magneter har en nordpol og en sydpol. Modpoler tiltrækker, ens poler frastøder.',formel:'N + S = tiltrækker ✓
+N + N = frastøder ✗',tip:'Jordens magnetfelt beskytter os mod stråling fra solen'},
+  {id:'stof3',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'⚗️',titel:'Atomer og molekyler',tekst:'Alt stof er bygget af atomer. Atomer binder sig sammen og danner molekyler. Vand (H₂O) er et molekyle med 2 hydrogen og 1 oxygen.',formel:'H₂O = 2 hydrogen + 1 oxygen
+CO₂ = 1 carbon + 2 oxygen',tip:'Et sandkorn indeholder ca. 40 millioner millioner millioner atomer'},
+  {id:'stof4',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'🧪',titel:'Syrer og baser — pH',tekst:'pH måler om noget er surt eller basisk. pH 7 = neutralt. Under 7 = surt. Over 7 = basisk.',formel:'pH 1-6: surt (citronsaft, mavesyre)
+pH 7: neutralt (rent vand)
+pH 8-14: basisk (sæbe, bagepulver)',tip:'Lakmuspapir skifter farve — rødt = surt, blåt = basisk'},
+  {id:'stof5',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'♻️',titel:'Bæredygtighed og kredsløb',tekst:'Naturen genanvender alt via kredsløb. Menneskelig aktivitet forstyrrer disse kredsløb og skaber forurening.',formel:'Kulstofkredsløbet: CO₂ → planter → dyr → CO₂
+Kvælstofkredsløbet: jord → planter → dyr → jord',tip:'Genbrug og vedvarende energi hjælper med at mindske forstyrrelsen'},
+
+  // ══ NATUR/TEKNOLOGI — UNIVERSET ══
+  {id:'uni1',fag:'nat',klasse:'3.-4. kl.',type:'begreb',icon:'🌍',titel:'Jordens bevægelse',tekst:'Jorden drejer om sin egen akse — det giver dag og nat (24 timer). Jorden kredser om Solen — det giver et år (365 dage).',formel:'Rotation (akse): 24 timer → dag og nat
+Revolution (Sol): 365 dage → et år',tip:'Jordens hældning (23,5°) giver os årstiderne — IKKE afstanden til Solen'},
+  {id:'uni2',fag:'nat',klasse:'3.-4. kl.',type:'begreb',icon:'🌑',titel:'Månens faser',tekst:'Månen kredser om Jorden på 29,5 dage. Vi ser forskellige dele af Månens belyste side afhængig af positionen.',formel:'Nymåne → Halvmåne → Fuldmåne → Halvmåne → Nymåne',tip:'Månens tyngdekraft skaber tidevand på Jorden'},
+  {id:'uni3',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'⭐',titel:'Stjerner og Solsystemet',tekst:'Solen er en stjerne — en gigantisk glødende gaskugle. Solsystemet har 8 planeter. Nærmeste stjerne til Solen er Proxima Centauri (4,2 lysår).',formel:'Planeter i orden fra Solen:
+Merkur, Venus, Jord, Mars, Jupiter, Saturn, Uranus, Neptun',tip:'Husk: "Men Vi Jordiske Mennesker Jager Slet Ukendte Nationer"'},
+  {id:'uni4',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'🌌',titel:'Mælkevejen og universet',tekst:'Vores Solsystem ligger i galaksen Mælkevejen. Universet indeholder milliarder af galakser. Big Bang skete for ca. 13,8 milliarder år siden.',formel:'Big Bang: for 13,8 mia. år siden
+Jordens alder: ca. 4,5 mia. år
+Menneskenes alder: ca. 300.000 år',tip:'Lyset fra Solen bruger ca. 8 minutter om at nå Jorden'},
+
+  // ══ NATUR/TEKNOLOGI — TEKNOLOGI OG DESIGN ══
+  {id:'tek1',fag:'nat',klasse:'3.-4. kl.',type:'begreb',icon:'⚙️',titel:'Simple maskiner',tekst:'Simple maskiner gør arbejde nemmere ved at ændre kraft eller retning. De seks typer: vægtstang, hjul og aksel, skråplan, kile, skrue og taljesystem.',formel:'Vægtstang: lille kraft → stor kraft
+Skråplan: kortere kraft over længere afstand',tip:'En saks er to kiler og en vægtstang på én gang!'},
+  {id:'tek2',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'💡',titel:'Elektriske kredsløb',tekst:'Et elektrisk kredsløb skal være lukket for at strømmen kan løbe. Komponenter: batteri, ledninger, pærer, modstande.',formel:'Serie: pærerne afhænger af hinanden
+Parallel: pærerne er uafhængige',tip:'Hjemmets stikkontakter er parallelforbundet — derfor virker én pære selvom en anden brænder ud'},
+  {id:'tek3',fag:'nat',klasse:'5.-6. kl.',type:'begreb',icon:'🌬️',titel:'Vedvarende energi',tekst:'Vedvarende energi er energi der ikke slipper op: sol, vind, vand og geotermi. Fossile brændsler (kul, olie, gas) er ikke vedvarende.',formel:'Vedvarende: sol, vind, vand, biogas, geotermi
+Ikke vedvarende: kul, olie, naturgas',tip:'Danmark er et af verdens førende lande inden for vindenergi'},
+  {id:'tek4',fag:'nat',klasse:'7.-9. kl.',type:'begreb',icon:'🧬',titel:'DNA og arv',tekst:'DNA er opskriften på alle levende organismer. Gener er afsnit af DNA der koder for bestemte egenskaber. Vi arver halvt DNA fra mor og halvt fra far.',formel:'DNA → gener → proteiner → egenskaber
+Celler: 46 kromosomer (23 par)',tip:'Mennesker deler 99,9% af deres DNA med hinanden — og 98,7% med chimpanser'},
+  {id:'tek5',fag:'nat',klasse:'7.-9. kl.',type:'begreb',icon:'🌡️',titel:'Klimaforandringer',tekst:'Drivhuseffekten: CO₂ og andre gasser holder varmen inde i atmosfæren. Menneskelig aktivitet øger CO₂ og opvarmer Jorden.',formel:'CO₂ fra fossile brændsler → drivhuseffekt → global opvarmning → klimaforandringer',tip:'Jordens gennemsnitstemperatur er steget ca. 1,1°C siden 1850'},
+  {id:'tek6',fag:'nat',klasse:'7.-9. kl.',type:'begreb',icon:'⚗️',titel:'Kemiske reaktioner',tekst:'En kemisk reaktion ændrer stoffers sammensætning. Tegn: farveændring, temperaturændring, gasudvikling, bundfald.',formel:'Reaktanter → Produkter
+Eks: 2H₂ + O₂ → 2H₂O (vand dannes)',tip:'Forbrænding er en kemisk reaktion — stearinlys omdanner voks og ilt til CO₂ og vand'},
+
 ];
 
 // ── STATE ──
@@ -327,21 +391,17 @@ async function saveToCloud() {
 }
 
 async function loadFromCloud() {
-  // Local first
-  try {
-    const lc = localStorage.getItem('h-custom'); if(lc) custom = JSON.parse(lc);
-    const lv = localStorage.getItem('h-videos'); if(lv) videoLinks = JSON.parse(lv);
-    const lf = localStorage.getItem('h-favs'); if(lf) favoritter = new Set(JSON.parse(lf));
-  } catch(e) {}
-  render();
   // Then cloud
   try {
     const r = await fetch('https://api.jsonbin.io/v3/b/' + BIN_ID + '/latest', {
       headers: {'X-Master-Key': API_KEY, 'X-Bin-Meta': 'false'}
     });
     if (r.ok) {
-      const d = await r.json();
-      if (d && d.custom !== undefined) {
+      const txt = await r.text();
+      let d = null;
+      try { d = JSON.parse(txt); } catch(e) {}
+      // Kun opdater fra cloud hvis der faktisk er egne kort eller videoer
+      if (d && (d.custom?.length > 0 || Object.keys(d.videos||{}).length > 0 || (d.favs||[]).length > 0)) {
         custom = d.custom || [];
         videoLinks = d.videos || {};
         favoritter = new Set(d.favs || []);
@@ -440,6 +500,13 @@ function renderFavoritter() {
   document.getElementById('fav-output').innerHTML = `<div class="cards">${favs.map(renderCard).join('')}</div>`;
 }
 
+function renderBrok(tekst) {
+  // Erstat a/b mønstre med visuelle brøker (undtagen URL-lignende)
+  return tekst.replace(/\b(\d+)\/([1-9]\d*)\b/g, (match, t, n) => {
+    return `<span class="brok"><span class="brok-t">${t}</span><span class="brok-n">${n}</span></span>`;
+  });
+}
+
 function renderCard(d) {
   const fag = getFag(d.fag);
   const isOpen = openCards.has(d.id);
@@ -456,8 +523,8 @@ function renderCard(d) {
       <div class="carr">▼</div>
     </div>
     <div class="cbody">
-      <div class="ctekst">${(d.tekst||'').replace(/\n/g,'<br>')}</div>
-      ${d.formel?`<div class="cformel">${d.formel.replace(/\n/g,'<br>')}</div>`:''}
+      <div class="ctekst">${renderBrok((d.tekst||'')).replace(/\n/g,'<br>')}</div>
+      ${d.formel?`<div class="cformel">${renderBrok(d.formel).replace(/\n/g,'<br>')}</div>`:''}
       ${d.tip?`<div class="ctip">💡 ${d.tip}</div>`:''}
       ${ytId?`<div class="video-wrap"><iframe src="https://www.youtube.com/embed/${ytId}" allowfullscreen></iframe></div>`:''}
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.5rem;flex-wrap:wrap;gap:5px">
@@ -551,10 +618,11 @@ function renderQuizQuestion() {
   const fag = getFag(kort.fag);
   quizAnswered = false;
 
-  // Lav 4 svarmuligheder — 1 rigtig + 3 forkerte
+  // Lav 4 svarmuligheder — 1 rigtig + 3 forkerte fra SAMME FAG
   const rigtig = kort.titel;
-  const andre = allData().filter(d => d.id !== kort.id && d.titel !== rigtig)
-    .sort(() => Math.random() - .5).slice(0, 3).map(d => d.titel);
+  const sammePool = allData().filter(d => d.id !== kort.id && d.titel !== rigtig && d.fag === kort.fag);
+  const andrePool = sammePool.length >= 3 ? sammePool : allData().filter(d => d.id !== kort.id && d.titel !== rigtig);
+  const andre = andrePool.sort(() => Math.random() - .5).slice(0, 3).map(d => d.titel);
   const options = [rigtig, ...andre].sort(() => Math.random() - .5);
 
   document.getElementById('quiz-output').innerHTML = `
@@ -670,6 +738,14 @@ const savedTheme = localStorage.getItem('h-theme') || 'light';
 document.documentElement.setAttribute('data-theme', savedTheme);
 document.getElementById('theme-btn').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// Render med det samme med built-in data
+try { const lc = localStorage.getItem('h-custom'); if(lc) custom = JSON.parse(lc); } catch(e) {}
+try { const lv = localStorage.getItem('h-videos'); if(lv) videoLinks = JSON.parse(lv); } catch(e) {}
+try { const lf = localStorage.getItem('h-favs'); if(lf) favoritter = new Set(JSON.parse(lf)); } catch(e) {}
+render();
+
+// Hent derefter fra skyen i baggrunden
 loadFromCloud();
 </script>
 </body>
