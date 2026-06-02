@@ -551,10 +551,11 @@ function renderQuizQuestion() {
   const fag = getFag(kort.fag);
   quizAnswered = false;
 
-  // Lav 4 svarmuligheder — 1 rigtig + 3 forkerte
+  // Lav 4 svarmuligheder — 1 rigtig + 3 forkerte fra SAMME FAG
   const rigtig = kort.titel;
-  const andre = allData().filter(d => d.id !== kort.id && d.titel !== rigtig)
-    .sort(() => Math.random() - .5).slice(0, 3).map(d => d.titel);
+  const sammePool = allData().filter(d => d.id !== kort.id && d.titel !== rigtig && d.fag === kort.fag);
+  const andrePool = sammePool.length >= 3 ? sammePool : allData().filter(d => d.id !== kort.id && d.titel !== rigtig);
+  const andre = andrePool.sort(() => Math.random() - .5).slice(0, 3).map(d => d.titel);
   const options = [rigtig, ...andre].sort(() => Math.random() - .5);
 
   document.getElementById('quiz-output').innerHTML = `
