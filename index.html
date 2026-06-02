@@ -100,6 +100,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="logo">Husk<span>det!</span></div>
   <div class="sw"><span class="si">🔍</span><input class="search" type="text" placeholder="Søg..." id="search" oninput="render()"></div>
   <button class="hb hb-g" onclick="skiftTema()" id="tema-btn">🌙</button>
+  <button class="hb hb-g" onclick="promptElevNavn()" id="elev-navn-vis">👤 Log ind</button>
   <button class="hb hb-a" onclick="openModal()">+ Tilføj</button>
 </div>
 
@@ -146,7 +147,51 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const fbApp = initializeApp({databaseURL:'https://huskeapp-71950-default-rtdb.europe-west1.firebasedatabase.app'});
+const fbDb = getDatabase(fbApp);
+
+let elevNavn = localStorage.getItem('hd-elev')||'';
+let elevNoter = {};
+
+async function loadElevNoter() {
+  if (!elevNavn) return;
+  try {
+    const snap = await get(ref(fbDb, 'elever/' + elevNavn));
+    if (snap.exists()) elevNoter = snap.val();
+  } catch(e) {}
+}
+
+async function gemNote(kortId, tekst) {
+  if (!elevNavn) return;
+  elevNoter[kortId] = tekst;
+  try {
+    await set(ref(fbDb, 'elever/' + elevNavn + '/' + kortId), tekst);
+  } catch(e) {}
+}
+
+function promptElevNavn() {
+  const navn = prompt('Hvad hedder du? (Dit navn bruges til at gemme dine noter)');
+  if (!navn || !navn.trim()) return;
+  elevNavn = navn.trim();
+  localStorage.setItem('hd-elev', elevNavn);
+  opdaterElevUI();
+  loadElevNoter().then(() => render());
+}
+
+function opdaterElevUI() {
+  const el = document.getElementById('elev-navn-vis');
+  if (el) el.textContent = elevNavn ? '👤 ' + elevNavn : '👤 Log ind';
+}
+
+window.promptElevNavn = promptElevNavn;
+window.gemNote = gemNote;
+window.getElevNavn = () => elevNavn;
+window.getElevNoter = () => elevNoter;
+
 const FAGER = [
   {id:'alle',label:'Alle fag',e:'📚',c:'#534AB7',bg:'#EEEDFE'},
   {id:'mat',label:'Matematik',e:'🔢',c:'#534AB7',bg:'#EEEDFE'},
@@ -352,6 +397,18 @@ function kort(d) {
       ${d.formel?`<div class="cformel">${rb(d.formel).replace(/\n/g,'<br>')}</div>`:''}
       ${d.tip?`<div class="ctip">💡 ${d.tip}</div>`:''}
       ${ytId?`<div class="vw"><iframe src="https://www.youtube.com/embed/${ytId}" allowfullscreen></iframe></div>`:''}
+      ${window.getElevNavn && window.getElevNavn() ? `
+        <div style="margin-top:.75rem" onclick="event.stopPropagation()">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em">📝 Mine noter</div>
+          <textarea
+            style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;height:70px;resize:vertical"
+            placeholder="Skriv dine egne noter her..."
+            onchange="window.gemNote('${d.id}', this.value)"
+          >${(window.getElevNoter && window.getElevNoter()['${d.id}'])||''}</textarea>
+        </div>` : `
+        <div style="margin-top:.75rem;font-size:12px;color:var(--muted);font-style:italic" onclick="event.stopPropagation()">
+          💡 <button onclick="promptElevNavn()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;text-decoration:underline">Log ind</button> for at skrive egne noter
+        </div>`}
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.5rem;flex-wrap:wrap;gap:5px">
         <span class="cbadge" style="background:${f.bg};color:${f.c}">${f.e} ${f.label}</span>
         <div style="display:flex;gap:5px">
@@ -568,6 +625,8 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') lukkModal(); })
 load();
 render(); // Vis kort med det samme
 hentCloud(); // Hent egne data fra skyen i baggrunden
+opdaterElevUI();
+if (elevNavn) loadElevNoter().then(() => render());
 </script>
 </body>
 </html>
