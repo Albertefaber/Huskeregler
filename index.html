@@ -297,6 +297,7 @@ function gem() {
     localStorage.setItem('hd-videos', JSON.stringify(videoLinks));
     localStorage.setItem('hd-favs', JSON.stringify([...favoritter]));
   } catch(e) {}
+  gemCloud().catch(e => {});
 }
 
 function load() {
@@ -610,12 +611,7 @@ async function hentCloud() {
   } catch(e) {}
 }
 
-// Override gem til også at gemme i cloud
-const gemLokal = gem;
-function gem() {
-  gemLokal();
-  gemCloud().catch(e => {});
-}
+
 
 // INIT
 const t = localStorage.getItem('hd-tema')||'light';
