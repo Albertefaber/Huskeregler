@@ -391,13 +391,6 @@ async function saveToCloud() {
 }
 
 async function loadFromCloud() {
-  // Local first
-  try {
-    const lc = localStorage.getItem('h-custom'); if(lc) custom = JSON.parse(lc);
-    const lv = localStorage.getItem('h-videos'); if(lv) videoLinks = JSON.parse(lv);
-    const lf = localStorage.getItem('h-favs'); if(lf) favoritter = new Set(JSON.parse(lf));
-  } catch(e) {}
-  render();
   // Then cloud
   try {
     const r = await fetch('https://api.jsonbin.io/v3/b/' + BIN_ID + '/latest', {
@@ -742,6 +735,14 @@ const savedTheme = localStorage.getItem('h-theme') || 'light';
 document.documentElement.setAttribute('data-theme', savedTheme);
 document.getElementById('theme-btn').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// Render med det samme med built-in data
+try { const lc = localStorage.getItem('h-custom'); if(lc) custom = JSON.parse(lc); } catch(e) {}
+try { const lv = localStorage.getItem('h-videos'); if(lv) videoLinks = JSON.parse(lv); } catch(e) {}
+try { const lf = localStorage.getItem('h-favs'); if(lf) favoritter = new Set(JSON.parse(lf)); } catch(e) {}
+render();
+
+// Hent derefter fra skyen i baggrunden
 loadFromCloud();
 </script>
 </body>
